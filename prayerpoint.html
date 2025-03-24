@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>365 Daily Prayer Points</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --secondary: #f8fafc;
+            --accent: #1e40af;
+            --text: #1e293b;
+            --light-text: #64748b;
+            --background: #f1f5f9;
+            --card: #ffffff;
+            --border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .app-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .date-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1.5rem 0;
+            background-color: var(--card);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--accent);
+        }
+
+        .prayer-card {
+            background-color: var(--card);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--primary);
+        }
+
+        .day-title {
+            margin-bottom: 1rem;
+            color: var(--primary);
+            font-size: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .scripture {
+            font-style: italic;
+            color: var(--light-text);
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background-color: var(--secondary);
+            border-radius: 0.375rem;
+            font-size: 0.95rem;
+        }
+
+        .prayer-points {
+            list-style-position: inside;
+            padding-left: 0.5rem;
+        }
+
+        .prayer-points li {
+            margin-bottom: 0.75rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .prayer-points li::before {
+            content: "✝";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+        }
+
+        .notification-settings {
+            background-color: var(--card);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .settings-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        .time-input {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        input[type="time"] {
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--card);
+            display: flex;
+            justify-content: space-around;
+            padding: 0.75rem 0;
+            box-shadow: 0 -1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .bottom-nav button {
+            background-color: transparent;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.75rem;
+        }
+
+        .bottom-nav button:hover {
+            background-color: transparent;
+            color: var(--primary);
+        }
+
+        .bottom-nav i {
+            font-size: 1.25rem;
+        }
+
+        .active-nav {
+            color: var(--primary) !important;
+        }
+
+        /* For mobile responsiveness */
+        @media (max-width: 640px) {
+            .app-container {
+                padding: 0.5rem;
+            }
+
+            .date-nav {
+                margin: 1rem 0;
+                padding: 0.75rem;
+            }
+
+            .prayer-card {
+                padding: 1rem;
+            }
+
+            .day-title {
+                font-size: 1.25rem;
+            }
+
+            .scripture {
+                font-size: 0.85rem;
+                padding: 0.5rem;
+            }
+        }
+
+        /* Simple animation for content change */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fadeIn {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .notification {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background-color: var(--accent);
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transform: translateX(200%);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .close-notification {
+            background: none;
+            border: none;
+            color: white;
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>365 Daily Prayer Points</h1>
+        <p>Strengthening your faith one prayer at a time</p>
+    </header>
+
+    <div class="app-container">
+        <div class="date-nav">
+            <button id="prev-day">Previous Day</button>
+            <h2 id="current-date">Loading...</h2>
+            <button id="next-day">Next Day</button>
+        </div>
+
+        <div class="notification-settings">
+            <h3 class="settings-title">Prayer Notification Settings</h3>
+            <div class="time-input">
+                <label for="notification-time">Remind me to pray at:</label>
+                <input type="time" id="notification-time" value="08:00">
+            </div>
+            <div class="toggle-switch">
+                <input type="checkbox" id="enable-notifications" checked>
+                <label for="enable-notifications">Enable daily prayer notifications</label>
+            </div>
+            <button id="save-settings" style="margin-top: 1rem;">Save Settings</button>
+        </div>
+
+        <div id="prayer-content" class="fadeIn">
+            <!-- Prayer content will be loaded here -->
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <button class="active-nav">
+            <i>📅</i>
+            <span>Today</span>
+        </button>
+        <button>
+            <i>📖</i>
+            <span>Browse</span>
+        </button>
+        <button>
+            <i>🔖</i>
+            <span>Favorites</span>
+        </button>
+        <button>
+            <i>⚙️</i>
+            <span>Settings</span>
+        </button>
+    </div>
+
+    <div class="notification" id="prayer-notification">
+        <button class="close-notification" onclick="closeNotification()">✕</button>
+        <h3>Time to Pray</h3>
+        <p>Today's prayer points are ready for you.</p>
+    </div>
+
+    <script>
+        // Prayer data for 365 days
+const prayerData = [
+    // Day 1
+    {
+        day: 1,
+        title: "New Beginnings",
+        scripture: "Therefore, if anyone is in Christ, the new creation has come: The old has gone, the new is here! - 2 Corinthians 5:17",
+        points: [
+            "Pray for God's guidance in this new day and new beginnings in your life.",
+            "Ask for wisdom to walk in God's perfect will for your life.",
+            "Pray for strength to leave behind old habits that don't honor God.",
+            "Thank God for His mercies that are new every morning (Lamentations 3:22-23).",
+            "Pray for a renewed mind to see things from God's perspective."
+        ]
+    },
+    // Day 2
+    {
+        day: 2,
+        title: "Faith and Trust",
+        scripture: "Trust in the LORD with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight. - Proverbs 3:5-6",
+        points: [
+            "Pray for increased faith to trust God in difficult circumstances.",
+            "Ask God to help you surrender areas where you're trying to control outcomes.",
+            "Pray for peace that comes from trusting God's perfect plan for your life.",
+            "Ask for discernment to recognize God's direction and leading.",
+            "Pray that your faith would be a testimony to others around you."
+        ]
+    },
+    // Day 3
+    {
+        day: 3,
+        title: "Family Blessings",
+        scripture: "As for me and my household, we will serve the LORD. - Joshua 24:15",
+        points: [
+            "Pray for spiritual growth and unity within your family.",
+            "Ask God to heal any broken relationships or misunderstandings.",
+            "Pray for protection over each family member - physically, emotionally, and spiritually.",
+            "Ask for wisdom in leading your family in godly values and principles.",
+            "Pray that your family would be a light in your community."
+        ]
+    },
+    // Day 4
+    {
+        day: 4,
+        title: "Strength in Weakness",
+        scripture: "But he said to me, 'My grace is sufficient for you, for my power is made perfect in weakness.' Therefore I will boast all the more gladly about my weaknesses, so that Christ's power may rest on me. - 2 Corinthians 12:9",
+        points: [
+            "Pray for God's strength in areas where you feel weak or inadequate.",
+            "Ask for courage to be vulnerable before God with your struggles.",
+            "Pray for humility to recognize your dependence on God's grace.",
+            "Thank God for working through your weaknesses to display His glory.",
+            "Pray for perseverance through trials and challenges."
+        ]
+    },
+    // Day 5
+    {
+        day: 5,
+        title: "Walking in Love",
+        scripture: "A new command I give you: Love one another. As I have loved you, so you must love one another. By this everyone will know that you are my disciples, if you love one another. - John 13:34-35",
+        points: [
+            "Pray for God's love to fill your heart and overflow to others.",
+            "Ask for grace to love difficult people in your life.",
+            "Pray for opportunities to show Christ's love in practical ways today.",
+            "Ask God to help you forgive those who have hurt you.",
+            "Pray that your actions would be motivated by love rather than self-interest."
+        ]
+    },
+    // Day 6
+    {
+        day: 6,
+        title: "Peace in Turmoil",
+        scripture: "Peace I leave with you; my peace I give you. I do not give to you as the world gives. Do not let your hearts be troubled and do not be afraid. - John 14:27",
+        points: [
+            "Pray for God's peace to rule in your heart amid life's storms.",
+            "Ask for the strength to cast your anxieties on God (1 Peter 5:7).",
+            "Pray for a calm spirit that trusts God's sovereignty in all situations.",
+            "Ask God to help you be a peacemaker in conflicts around you.",
+            "Pray for the peace of Christ to be evident in your words and actions."
+        ]
+    },
+    // Day 7
+    {
+        day: 7,
+        title: "Gratitude and Thanksgiving",
+        scripture: "Give thanks in all circumstances; for this is God's will for you in Christ Jesus. - 1 Thessalonians 5:18",
+        points: [
+            "Thank God for specific blessings in your life right now.",
+            "Pray for a heart that recognizes God's goodness even in difficult times.",
+            "Ask for joy that comes from focusing on God's faithfulness.",
+            "Pray for freedom from comparison and discontentment.",
+            "Thank God for His unconditional love and constant presence."
+        ]
+    }
+];
+
+// Additional data arrays to generate prayer points for the remaining days
+const topics = [
+    "Spiritual Growth", "Divine Protection", "Wisdom and Guidance", 
+    "Health and Healing", "Financial Provision", "Purpose and Destiny",
+    "Ministry and Service", "Spiritual Warfare", "Joy and Peace", 
+    "Relationships", "Forgiveness", "Character Development",
+    "Patience and Endurance", "Humility", "Boldness in Faith",
+    "Compassion", "Purity of Heart", "Discernment",
+    "Worship and Praise", "The Nations", "Gospel Advancement",
+    "Leadership", "Church Unity", "Biblical Knowledge",
+    "God's Presence", "Spiritual Awakening", "Kingdom Focus",
+    "Hope in Christ", "Spiritual Discipline", "Fruit of the Spirit"
+];
+
+const scriptures = [
+    "For I know the plans I have for you, declares the LORD, plans to prosper you and not to harm you, plans to give you hope and a future. - Jeremiah 29:11",
+    "I can do all this through him who gives me strength. - Philippians 4:13",
+    "And we know that in all things God works for the good of those who love him, who have been called according to his purpose. - Romans 8:28",
+    "Be strong and courageous. Do not be afraid; do not be discouraged, for the LORD your God will be with you wherever you go. - Joshua 1:9",
+    "The LORD is my shepherd, I lack nothing. - Psalm 23:1",
+    "But seek first his kingdom and his righteousness, and all these things will be given to you as well. - Matthew 6:33",
+    "Come to me, all you who are weary and burdened, and I will give you rest. - Matthew 11:28",
+    "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God. - Philippians 4:6",
+    "The LORD is close to the brokenhearted and saves those who are crushed in spirit. - Psalm 34:18",
+    "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life. - John 3:16",
+    "Be joyful in hope, patient in affliction, faithful in prayer. - Romans 12:12",
+    "But the fruit of the Spirit is love, joy, peace, forbearance, kindness, goodness, faithfulness, gentleness and self-control. - Galatians 5:22-23",
+    "Let us not become weary in doing good, for at the proper time we will reap a harvest if we do not give up. - Galatians 6:9",
+    "The name of the LORD is a fortified tower; the righteous run to it and are safe. - Proverbs 18:10",
+    "Submit yourselves, then, to God. Resist the devil, and he will flee from you. - James 4:7"
+];
+
+const prayerPointSets = [
+    [
+        "Pray for a deeper hunger for God's Word and truth.",
+        "Ask God to remove any distractions that keep you from spiritual growth.",
+        "Pray for faithful mentors and teachers in your spiritual journey.",
+        "Ask for strength to apply biblical principles in daily situations.",
+        "Pray for a transformed mind that aligns with Christ's."
+    ],
+    [
+        "Pray for God's hedge of protection around your family.",
+        "Ask for spiritual discernment to recognize enemy attacks.",
+        "Pray for God's angels to encamp around you (Psalm 34:7).",
+        "Ask for protection over your mind, emotions, and thought life.",
+        "Pray that your home would be a sanctuary of God's peace and protection."
+    ],
+    [
+        "Pray for wisdom in important decisions you're facing today.",
+        "Ask God to make His will clear through His Word and godly counsel.",
+        "Pray for sensitivity to the Holy Spirit's gentle leading.",
+        "Ask for clarity when the path seems uncertain or confusing.",
+        "Pray for courage to follow God's direction even when it's difficult."
+    ],
+    [
+        "Pray for physical healing and strength for those who are sick.",
+        "Ask God for emotional healing from past wounds and traumas.",
+        "Pray for healthy habits and discipline in caring for your body.",
+        "Thank God that He is Jehovah Rapha, the God who heals.",
+        "Ask for faith to believe in God's healing power."
+    ],
+    [
+        "Pray for God's provision for your financial needs.",
+        "Ask for wisdom in stewardship of the resources God has given you.",
+        "Pray for freedom from anxiety about money and material things.",
+        "Ask God to open doors for increased income if needed.",
+        "Pray for a generous heart that delights in giving to others."
+    ]
+];
+
+// Generate prayer data for days 8 through 365
+for (let day = 8; day <= 365; day++) {
+    // Cycle through the arrays using modulo arithmetic so that the data repeats if we run out of unique entries
+    const topicIndex = (day - 8) % topics.length;
+    const scriptureIndex = (day - 8) % scriptures.length;
+    const prayerPointSetIndex = (day - 8) % prayerPointSets.length;
+
+    prayerData.push({
+        day: day,
+        title: topics[topicIndex],
+        scripture: scriptures[scriptureIndex],
+        points: prayerPointSets[prayerPointSetIndex]
+    });
+}
+
+// For demonstration: log the first 10 days to verify the output
+console.log(prayerData.slice(0, 10));
+
+
+        // Function to generate prayer points for remaining days
+        function generateRemainingPrayerData() {
+            for(let i = prayerData.length + 1; i <= 365; i++) {
+                const topicIndex = Math.floor(Math.random() * topics.length);
+                const scriptureIndex = Math.floor(Math.random() * scriptures.length);
+                const prayerPointIndex = Math.floor(Math.random() * prayerPointSets.length);
+                
+                prayerData.push({
+                    day: i,
+                    title: topics[topicIndex],
+                    scripture: scriptures[scriptureIndex],
+                    points: prayerPointSets[prayerPointIndex]
+                });
+            }
+        }
+
+        // Generate the remaining prayer data
+        generateRemainingPrayerData();
+
+        // DOM elements
+        const currentDateElement = document.getElementById('current-date');
+        const prayerContentElement = document.getElementById('prayer-content');
+        const prevDayButton = document.getElementById('prev-day');
+        const nextDayButton = document.getElementById('next-day');
+        const notificationTimeInput = document.getElementById('notification-time');
+        const enableNotificationsCheckbox = document.getElementById('enable-notifications');
+        const saveSettingsButton = document.getElementById('save-settings');
+        const prayerNotification = document.getElementById('prayer-notification');
+
+        // App state
+        let currentDay = 1;
+        let notificationTime = '08:00';
+        let notificationsEnabled = true;
+
+        // Initialize the app
+        function initApp() {
+            // Load saved preferences from localStorage
+            loadPreferences();
+            
+            // Check if we should use today's date or a saved day
+            const today = new Date();
+            const dayOfYear = getDayOfYear(today);
+            
+            if(localStorage.getItem('lastVisitedDay')) {
+                currentDay = parseInt(localStorage.getItem('lastVisitedDay'));
+            } else {
+                currentDay = dayOfYear;
+            }
+            
+            // Make sure current day is valid
+            if(currentDay < 1) currentDay = 1;
+            if(currentDay > 365) currentDay = 365;
+            
+            // Display the current day's prayer points
+            displayPrayerContent(currentDay);
+            
+            // Set up notification system
+            setupNotifications();
+        }
+
+        // Get day of year (1-365)
+        function getDayOfYear(date) {
+            const start = new Date(date.getFullYear(), 0, 0);
+            const diff = date - start;
+            const oneDay = 1000 * 60 * 60 * 24;
+            return Math.floor(diff / oneDay);
+        }
+
+        // Load user preferences from localStorage
+        function loadPreferences() {
+            if(localStorage.getItem('notificationTime')) {
+                notificationTime = localStorage.getItem('notificationTime');
+                notificationTimeInput.value = notificationTime;
+            }
+            
+            if(localStorage.getItem('notificationsEnabled') !== null) {
+                notificationsEnabled = localStorage.getItem('notificationsEnabled') === 'true';
+                enableNotificationsCheckbox.checked = notificationsEnabled;
+            }
+        }
+
+        // Save user preferences to localStorage
+        function savePreferences() {
+            localStorage.setItem('notificationTime', notificationTime);
+            localStorage.setItem('notificationsEnabled', notificationsEnabled);
+            localStorage.setItem('lastVisitedDay', currentDay);
+            
+            // Show confirmation
+            showNotification('Settings saved successfully!');
+        }
+
+        // Display prayer content for a specific day
+        function displayPrayerContent(day) {
+            // Find the prayer data for this day
+            const prayer = prayerData.find(p => p.day === day) || prayerData[0];
+            
+            // Update current date display
+            currentDateElement.textContent = `Day ${prayer.day}: ${prayer.title}`;
+            
+            // Create the prayer card content
+            const content = `
+                <div class="prayer-card">
+                    <h3 class="day-title">Day ${prayer.day}: ${prayer.title}</h3>
+                    <div class="scripture">${prayer.scripture}</div>
+                    <h4>Prayer Points:</h4>
+                    <ul class="prayer-points">
+                        ${prayer.points.map(point => `<li>${point}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+            
+            // Remove and re-add the fadeIn class to trigger animation
+            prayerContentElement.classList.remove('fadeIn');
+            setTimeout(() => {
+                prayerContentElement.innerHTML = content;
+                prayerContentElement.classList.add('fadeIn');
+            }, 10);
+            
+            // Update localStorage
+            localStorage.setItem('lastVisitedDay', day);
+        }
+
+        // Set up notification system
+        function setupNotifications() {
+            // Check if notifications are supported
+            if('Notification' in window) {
+                // Request permission when save button is clicked
+                saveSettingsButton.addEventListener('click', () => {
+                    if(enableNotificationsCheckbox.checked) {
+                        Notification.requestPermission();
+                    }
+                    
+                    notificationTime = notificationTimeInput.value;
+                    notificationsEnabled = enableNotificationsCheckbox.checked;
+                    savePreferences();
+                });
+                
+                // Check for notification time match every minute
+                setInterval(checkNotificationTime, 60000);
+                checkNotificationTime(); // Check immediately on load
+            }
+        }
+
+        // Check if it's time to show a notification
+        function checkNotificationTime() {
+            if(!notificationsEnabled) return;
+            
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const currentTime = `${hours}:${minutes}`;
+            
+            // If the current time matches notification time (ignoring seconds)
+            if(currentTime === notificationTime) {
+                // Show in-app notification
+                showPrayerNotification();
+                
+                // Show system notification if permission granted
+                if(Notification.permission === 'granted') {
+                    const prayer = prayerData.find(p => p.day === currentDay) || prayerData[0];
+                    const notification = new Notification('Time to Pray', {
+                        body: `Today's focus: ${prayer.title}`,
+                        icon: '/api/placeholder/64/64'
+                    });
+                    
+                    notification.onclick = function() {
+                        window.focus();
+                        this.close();
+                    };
+                }
+            }
+        }
+
+        // Show in-app prayer notification
+        function showPrayerNotification() {
+            prayerNotification.classList.add('show');
+            
+            // Auto-hide after 10 seconds
+            setTimeout(() => {
+                closeNotification();
+            }, 10000);
+        }
+
+        // Close in-app notification
+        function closeNotification() {
+            prayerNotification.classList.remove('show');
+        }
+
+        // Show temporary notification
+        function showNotification(message) {
+            const notificationEl = document.getElementById('prayer-notification');
+            notificationEl.innerHTML = `
+                <button class="close-notification" onclick="closeNotification()">✕</button>
+                <p>${message}</p>
+            `;
+            notificationEl.classList.add('show');
+            
+            setTimeout(() => {
+                notificationEl.classList.remove('show');
+            }, 3000);
+        }
+
+        // Event listeners
+        prevDayButton.addEventListener('click', () => {
+            if(currentDay > 1) {
+                currentDay--;
+                displayPrayerContent(currentDay);
+            }
+        });
+
+        nextDayButton.addEventListener('click', () => {
+            if(currentDay < 365) {
+                currentDay++;
+                displayPrayerContent(currentDay);
+            }
+        });
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
