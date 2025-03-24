@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Christian Prayer Points</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.3/dist/tailwind.min.css" rel="stylesheet" />
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #3730a3 0%, #4f46e5 100%);
+        }
+        #prayerOutput {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen">
+    <header class="gradient-bg py-4 text-white shadow-md">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <h1 class="text-2xl font-bold">Daily Christian Prayer Points</h1>
+                <p class="text-indigo-100 text-sm">Strengthen your faith with guided prayer points each day</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto py-8 px-4">
+        <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-xl font-semibold mb-4">Today's Prayer Points</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label for="categorySelect" class="block text-sm font-medium text-gray-700 mb-1">Prayer Category</label>
+                        <select id="categorySelect" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="personal-growth">Personal Spiritual Growth</option>
+                            <option value="family">Family & Relationships</option>
+                            <option value="healing">Health & Healing</option>
+                            <option value="provision">God's Provision</option>
+                            <option value="guidance">Divine Guidance</option>
+                            <option value="nations">Nations & Leadership</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="customNeedInput" class="block text-sm font-medium text-gray-700 mb-1">Add Personal Prayer Need (Optional)</label>
+                        <textarea id="customNeedInput" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Enter a specific need you'd like to pray about today"></textarea>
+                        <p id="helpText" class="text-sm text-gray-500 mt-1"></p>
+                    </div>
+                    <div class="pt-2">
+                        <button id="generateButton" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-md transition-colors duration-200 flex items-center justify-center">
+                            <span>Generate Today's Prayers</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="loadingIndicator" class="hidden p-8 text-center">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                <p class="mt-2 text-gray-600">Preparing your prayer points for today...</p>
+            </div>
+
+            <div id="prayerContainer" class="hidden p-6 bg-gray-50">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold">Prayer Points for <span id="currentDate"></span>:</h3>
+                    <button id="notificationButton" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-medium py-1 px-3 rounded-md transition-colors duration-200 text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                        </svg>
+                        Set Prayer Reminder
+                    </button>
+                </div>
+                <div id="prayerOutput" class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 prose max-w-none"></div>
+                <div class="mt-4 flex justify-between">
+                    <button id="copyPrayerButton" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200">
+                        Copy Prayer Points
+                    </button>
+                    <button id="shareButton" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-medium py-2 px-4 rounded-md transition-colors duration-200">
+                        Share
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-4xl mx-auto mt-8">
+            <h3 class="text-lg font-semibold mb-3">Previous Prayer Points</h3>
+            <div id="previousPrayers" class="space-y-3">
+                <!-- Previous prayers will be loaded here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Notification Modal -->
+    <div id="notificationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold mb-4">Set Prayer Reminder</h3>
+            <p class="mb-4">Receive a notification when it's time to pray:</p>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Select Time</label>
+                <input type="time" id="reminderTime" class="w-full px-4 py-2 border border-gray-300 rounded-md">
+            </div>
+            <div class="flex justify-between">
+                <button id="closeModal" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-md">Cancel</button>
+                <button id="saveReminder" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md">Set Reminder</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-gray-800 py-6 text-center text-gray-400 text-sm mt-12">
+        <p class="mb-2">"Pray without ceasing." - 1 Thessalonians 5:17</p>
+        <p>© 2025 Daily Christian Prayer Points | For spiritual growth and encouragement</p>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const categorySelect = document.getElementById('categorySelect');
+        const customNeedInput = document.getElementById('customNeedInput');
+        const generateButton = document.getElementById('generateButton');
+        const copyPrayerButton = document.getElementById('copyPrayerButton');
+        const shareButton = document.getElementById('shareButton');
+        const notificationButton = document.getElementById('notificationButton');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const prayerContainer = document.getElementById('prayerContainer');
+        const prayerOutput = document.getElementById('prayerOutput');
+        const currentDateElement = document.getElementById('currentDate');
+        const previousPrayers = document.getElementById('previousPrayers');
+        const notificationModal = document.getElementById('notificationModal');
+        const closeModal = document.getElementById('closeModal');
+        const saveReminder = document.getElementById('saveReminder');
+        const reminderTime = document.getElementById('reminderTime');
+
+        // WebSocket and connection variables
+        let websocket = null;
+        const chatId = crypto.randomUUID();
+
+        // Set current date
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        currentDateElement.textContent = now.toLocaleDateString(undefined, options);
+
+        // System prompt for generating prayer points
+        const systemPrompt = `You are a compassionate Christian prayer guide. For each request, provide exactly 5 meaningful prayer points related to the chosen category. Each prayer point should:
+        1. Have a brief title/theme
+        2. Include 2-3 sentences of specific prayer content
+        3. Reference 1-2 relevant Bible verses with the full text quoted
+        4. End with a simple one-sentence prayer
+        
+        Format each prayer point clearly with numbering, and separate the scripture references visually. Keep the overall tone encouraging, faith-building, and respectful of mainstream Christian traditions. Focus on practical application and spiritual growth.`;
+
+        // Event listeners
+        generateButton.addEventListener('click', generatePrayers);
+        copyPrayerButton.addEventListener('click', copyPrayers);
+        shareButton.addEventListener('click', sharePrayers);
+        notificationButton.addEventListener('click', () => notificationModal.classList.remove('hidden'));
+        closeModal.addEventListener('click', () => notificationModal.classList.add('hidden'));
+        saveReminder.addEventListener('click', setReminder);
+
+        // Initialize UI with focus and load previous prayers
+        customNeedInput.focus();
+        loadPreviousPrayers();
+
+        // Dynamic help text based on prayer category
+        categorySelect.addEventListener('change', () => {
+            const category = categorySelect.value;
+            let helpMessage = '';
+            switch (category) {
+                case 'personal-growth':
+                    helpMessage = 'Prayers for spiritual disciplines, faith, and character development.';
+                    break;
+                case 'family':
+                    helpMessage = 'Prayers for family harmony, parenting, marriage, and relationships.';
+                    break;
+                case 'healing':
+                    helpMessage = 'Prayers for physical, emotional, and spiritual healing.';
+                    break;
+                case 'provision':
+                    helpMessage = 'Prayers for financial needs, employment, and God\'s provision.';
+                    break;
+                case 'guidance':
+                    helpMessage = 'Prayers for wisdom, decision-making, and understanding God\'s will.';
+                    break;
+                case 'nations':
+                    helpMessage = 'Prayers for countries, leaders, peace, and revival.';
+                    break;
+            }
+            document.getElementById('helpText').textContent = helpMessage;
+        });
+
+        // Trigger initial help text
+        categorySelect.dispatchEvent(new Event('change'));
+
+        // Function to generate prayers
+        function generatePrayers() {
+            const prayerCategory = categorySelect.value;
+            const customNeed = customNeedInput.value.trim();
+            
+            // Show loading, hide results
+            loadingIndicator.classList.remove('hidden');
+            prayerContainer.classList.add('hidden');
+            
+            // Construct message
+            let message = `Please provide 5 prayer points for the ${prayerCategory} category for today, ${currentDateElement.textContent}.`;
+            if (customNeed) {
+                message += ` Also include a specific prayer for this personal need: ${customNeed}`;
+            }
+            
+            // Connect to WebSocket and send request
+            connectWebSocket(message);
+        }
+
+        // WebSocket connection function
+        function connectWebSocket(message) {
+            const url = "wss://backend.buildpicoapps.com/api/chatbot/chat";
+            websocket = new WebSocket(url);
+            
+            websocket.addEventListener("open", () => {
+                websocket.send(
+                    JSON.stringify({
+                        chatId: chatId,
+                        appId: "ahead-less",
+                        systemPrompt: systemPrompt,
+                        message: message,
+                    })
+                );
+            });
+            
+            let responseText = "";
+            websocket.onmessage = (event) => {
+                responseText += event.data;
+            };
+            
+            websocket.onclose = (event) => {
+                loadingIndicator.classList.add('hidden');
+                if (event.code === 1000) {
+                    prayerOutput.innerHTML = responseText.replace(/\n/g, '<br>');
+                    prayerContainer.classList.remove('hidden');
+                    
+                    // Save to local storage
+                    savePrayer(responseText);
+                    
+                    // Update previous prayers display
+                    loadPreviousPrayers();
+                    
+                    // Show notification
+                    showPrayerNotification();
+                } else {
+                    alert("Connection lost. Please try again.");
+                }
+            };
+        }
+
+        // Copy prayers to clipboard
+        function copyPrayers() {
+            const content = prayerOutput.textContent;
+            navigator.clipboard.writeText(content)
+                .then(() => {
+                    const originalText = copyPrayerButton.textContent;
+                    copyPrayerButton.textContent = 'Copied!';
+                    setTimeout(() => {
+                        copyPrayerButton.textContent = originalText;
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Failed to copy content: ', err);
+                });
+        }
+
+        // Share prayers function
+        function sharePrayers() {
+            const prayerText = prayerOutput.textContent;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: `Prayer Points for ${currentDateElement.textContent}`,
+                    text: prayerText
+                })
+                .catch(error => console.log('Error sharing:', error));
+            } else {
+                copyPrayers();
+                alert('Prayer points copied to clipboard! You can now paste them in your preferred sharing app.');
+            }
+        }
+
+        // Save prayer to local storage
+        function savePrayer(prayerText) {
+            const prayers = JSON.parse(localStorage.getItem('prayers') || '[]');
+            prayers.unshift({
+                date: currentDateElement.textContent,
+                category: categorySelect.options[categorySelect.selectedIndex].text,
+                text: prayerText
+            });
+            
+            // Keep only the last 7 days
+            const recentPrayers = prayers.slice(0, 7);
+            localStorage.setItem('prayers', JSON.stringify(recentPrayers));
+        }
+
+        // Load previous prayers from local storage
+        function loadPreviousPrayers() {
+            const prayers = JSON.parse(localStorage.getItem('prayers') || '[]');
+            previousPrayers.innerHTML = '';
+            
+            if (prayers.length === 0) {
+                previousPrayers.innerHTML = '<p class="text-gray-500 italic">No previous prayer points. Generate your first daily prayers above!</p>';
+                return;
+            }
+            
+            prayers.forEach((prayer, index) => {
+                if (index === 0) return; // Skip today's prayer which is already displayed
+                
+                const prayerEl = document.createElement('div');
+                prayerEl.className = 'bg-white p-4 rounded-lg shadow-sm border border-gray-200 cursor-pointer hover:bg-gray-50';
+                prayerEl.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-medium">${prayer.date} - ${prayer.category}</h4>
+                        <button class="text-indigo-600 hover:text-indigo-800 text-sm" onclick="expandPrayer(${index})">View</button>
+                    </div>
+                `;
+                previousPrayers.appendChild(prayerEl);
+            });
+        }
+
+        // Expand previous prayer
+        window.expandPrayer = function(index) {
+            const prayers = JSON.parse(localStorage.getItem('prayers') || '[]');
+            const prayer = prayers[index];
+            
+            prayerOutput.innerHTML = prayer.text.replace(/\n/g, '<br>');
+            currentDateElement.textContent = prayer.date;
+            prayerContainer.classList.remove('hidden');
+            
+            // Scroll to prayer container
+            prayerContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Set prayer reminder
+        function setReminder() {
+            const time = reminderTime.value;
+            if (!time) {
+                alert('Please select a valid time for your prayer reminder');
+                return;
+            }
+            
+            // Save reminder time to local storage
+            localStorage.setItem('prayerReminderTime', time);
+            
+            // Request notification permission
+            if (Notification.permission !== 'granted') {
+                Notification.requestPermission();
+            }
+            
+            // Close modal and show confirmation
+            notificationModal.classList.add('hidden');
+            alert(`Prayer reminder set for ${time} daily.`);
+            
+            // Setup the reminder
+            setupReminderCheck();
+        }
+
+        // Setup reminder check
+        function setupReminderCheck() {
+            // Check for reminders every minute
+            setInterval(checkReminderTime, 60000);
+            checkReminderTime(); // Check immediately as well
+        }
+
+        // Check if it's time for the reminder
+        function checkReminderTime() {
+            const reminderTime = localStorage.getItem('prayerReminderTime');
+            if (!reminderTime) return;
+            
+            const now = new Date();
+            const currentHour = now.getHours().toString().padStart(2, '0');
+            const currentMinute = now.getMinutes().toString().padStart(2, '0');
+            const currentTime = `${currentHour}:${currentMinute}`;
+            
+            if (currentTime === reminderTime) {
+                showPrayerNotification(true);
+            }
+        }
+
+        // Show prayer notification
+        function showPrayerNotification(isReminder = false) {
+            const title = isReminder ? 'Time to Pray' : 'New Prayer Points Available';
+            const body = isReminder ? 'Take a moment to spend time with God in prayer.' : 'Today\'s prayer points are ready for you.';
+            
+            // Check if browser supports notifications
+            if ('Notification' in window) {
+                if (Notification.permission === 'granted') {
+                    new Notification(title, {
+                        body: body,
+                        icon: 'https://cdn.glitch.com/project-avatar/0e37cb8a-4885-4e79-a599-13e02d12e799.png'
+                    });
+                } else if (Notification.permission !== 'denied') {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === 'granted') {
+                            new Notification(title, {
+                                body: body,
+                                icon: 'https://cdn.glitch.com/project-avatar/0e37cb8a-4885-4e79-a599-13e02d12e799.png'
+                            });
+                        }
+                    });
+                }
+            }
+        }
+
+        // Check for notification permission on page load
+        if ('Notification' in window) {
+            if (Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        }
+
+        // Load saved reminder time if exists
+        const savedReminderTime = localStorage.getItem('prayerReminderTime');
+        if (savedReminderTime) {
+            reminderTime.value = savedReminderTime;
+            setupReminderCheck();
+        } else {
+            // Default to 7:00 AM
+            reminderTime.value = '07:00';
+        }
+    </script>
+</body>
+</html>
