@@ -176,6 +176,36 @@
                 quote: "Therefore, if anyone is in Christ, the new creation has come: The old has gone, the new is here!",
                 explanation: "In Christ, we receive a completely new identity and nature through spiritual rebirth.",
                 reference: "2 Corinthians 5:17"
+            },
+            {
+                quote: "And we know that in all things God works for the good of those who love him, who have been called according to his purpose.",
+                explanation: "God promises to use every circumstance, even difficult ones, for our ultimate good when we love and follow Him.",
+                reference: "Romans 8:28"
+            },
+            {
+                quote: "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God.",
+                explanation: "Instead of worrying, we're invited to bring our concerns to God through prayer, with gratitude for His faithfulness.",
+                reference: "Philippians 4:6"
+            },
+            {
+                quote: "Love is patient, love is kind. It does not envy, it does not boast, it is not proud.",
+                explanation: "True love, as God defines it, is shown through selfless actions and attitudes rather than mere feelings.",
+                reference: "1 Corinthians 13:4"
+            },
+            {
+                quote: "The Lord is close to the brokenhearted and saves those who are crushed in spirit.",
+                explanation: "In our deepest pain, God draws especially near to comfort and restore us.",
+                reference: "Psalm 34:18"
+            },
+            {
+                quote: "But those who hope in the Lord will renew their strength. They will soar on wings like eagles; they will run and not grow weary, they will walk and not be faint.",
+                explanation: "When we place our trust in God, He provides supernatural endurance and spiritual vitality.",
+                reference: "Isaiah 40:31"
+            },
+            {
+                quote: "For I know the plans I have for you, declares the Lord, plans to prosper you and not to harm you, plans to give you hope and a future.",
+                explanation: "God has good intentions for our lives and works according to His divine purpose, even when we can't see it.",
+                reference: "Jeremiah 29:11"
             }
         ];
 
@@ -192,9 +222,9 @@
             const dailyIndex = getDailyIndex();
             const currentQuote = quotes[dailyIndex];
             
-            document.getElementById('quote').textContent = currentQuote.quote;
+            document.getElementById('quote').textContent = `"${currentQuote.quote}"`;
             document.getElementById('explanation').textContent = currentQuote.explanation;
-            document.getElementById('reference').textContent = - ${currentQuote.reference};
+            document.getElementById('reference').textContent = `- ${currentQuote.reference}`;
         }
 
         function nextQuote() {
@@ -202,15 +232,15 @@
             const nextIndex = (currentIndex + 1) % quotes.length;
             const currentQuote = quotes[nextIndex];
             
-            document.getElementById('quote').textContent = currentQuote.quote;
+            document.getElementById('quote').textContent = `"${currentQuote.quote}"`;
             document.getElementById('explanation').textContent = currentQuote.explanation;
-            document.getElementById('reference').textContent = - ${currentQuote.reference};
+            document.getElementById('reference').textContent = `- ${currentQuote.reference}`;
         }
 
         function shareQuote() {
             const quote = document.getElementById('quote').textContent;
             const reference = document.getElementById('reference').textContent;
-            const text = ${quote}\n\n${reference};
+            const text = `${quote}\n\n${reference}`;
 
             if (navigator.share) {
                 navigator.share({
