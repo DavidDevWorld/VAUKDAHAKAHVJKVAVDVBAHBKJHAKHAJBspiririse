@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Christian Quotes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: #fff;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            max-width: 800px;
+            width: 90%;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-top: 50px;
+            transition: transform 0.3s ease;
+        }
+
+        .quote-container {
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .quote {
+            font-size: 1.4em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .explanation {
+            font-size: 1.1em;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .reference {
+            font-style: italic;
+            color: #3498db;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        button {
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .next-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .share-btn {
+            background: #27ae60;
+            color: white;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .quote {
+                font-size: 1.2em;
+            }
+
+            .explanation {
+                font-size: 1em;
+            }
+
+            .button-container {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+                padding: 15px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="quote-container">
+            <h1>Daily Christian Quote</h1>
+            <p class="quote" id="quote"></p>
+            <p class="explanation" id="explanation"></p>
+            <p class="reference" id="reference"></p>
+            <div class="button-container">
+                <button class="share-btn" onclick="shareQuote()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                    Share
+                </button>
+                <button class="next-btn" onclick="nextQuote()">Next Quote</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quotes = [
+            {
+                quote: "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.",
+                explanation: "This verse demonstrates God's ultimate act of love through Jesus Christ, offering salvation to all who believe.",
+                reference: "John 3:16"
+            },
+            {
+                quote: "I can do all things through Christ who strengthens me.",
+                explanation: "Our strength comes from Christ, enabling us to face any challenge when we rely on Him.",
+                reference: "Philippians 4:13"
+            },
+            {
+                quote: "Trust in the LORD with all your heart and lean not on your own understanding.",
+                explanation: "God calls us to complete dependence on Him, even when things don't make sense to our human perspective.",
+                reference: "Proverbs 3:5"
+            },
+            {
+                quote: "The LORD is my shepherd, I lack nothing.",
+                explanation: "God provides for all our needs when we follow Him as our loving protector and guide.",
+                reference: "Psalm 23:1"
+            },
+            {
+                quote: "Be still, and know that I am God.",
+                explanation: "In times of trouble, we find peace by recognizing God's sovereignty and perfect control.",
+                reference: "Psalm 46:10"
+            },
+            {
+                quote: "Therefore, if anyone is in Christ, the new creation has come: The old has gone, the new is here!",
+                explanation: "In Christ, we receive a completely new identity and nature through spiritual rebirth.",
+                reference: "2 Corinthians 5:17"
+            }
+        ];
+
+        function getDailyIndex() {
+            const now = new Date();
+            const start = new Date(now.getFullYear(), 0, 0);
+            const diff = now - start;
+            const oneDay = 1000 * 60 * 60 * 24;
+            const dayOfYear = Math.floor(diff / oneDay);
+            return dayOfYear % quotes.length;
+        }
+
+        function updateQuote() {
+            const dailyIndex = getDailyIndex();
+            const currentQuote = quotes[dailyIndex];
+            
+            document.getElementById('quote').textContent = currentQuote.quote;
+            document.getElementById('explanation').textContent = currentQuote.explanation;
+            document.getElementById('reference').textContent = - ${currentQuote.reference};
+        }
+
+        function nextQuote() {
+            const currentIndex = getDailyIndex();
+            const nextIndex = (currentIndex + 1) % quotes.length;
+            const currentQuote = quotes[nextIndex];
+            
+            document.getElementById('quote').textContent = currentQuote.quote;
+            document.getElementById('explanation').textContent = currentQuote.explanation;
+            document.getElementById('reference').textContent = - ${currentQuote.reference};
+        }
+
+        function shareQuote() {
+            const quote = document.getElementById('quote').textContent;
+            const reference = document.getElementById('reference').textContent;
+            const text = ${quote}\n\n${reference};
+
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Daily Christian Quote',
+                    text: text,
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(text);
+                alert('Quote copied to clipboard!');
+            }
+        }
+
+        // Initialize on load
+        updateQuote();
+    </script>
+</body>
+</html>
