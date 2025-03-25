@@ -154,7 +154,7 @@ Present multiple perspectives where relevant and note that interpretations may v
     // Trigger initial help text
     pageTypeSelect.dispatchEvent(new Event('change'));
     
-    // Function to generate content
+    // Function to generate content (FIXED TEMPLATE STRING)
     function generateContent() {
       const scriptureCategory = pageTypeSelect.value;
       const scriptureReference = descriptionInput.value.trim();
@@ -169,8 +169,8 @@ Present multiple perspectives where relevant and note that interpretations may v
       loadingIndicator.classList.remove('hidden');
       resultsContainer.classList.add('hidden');
       
-      // Construct message
-      const message = Please explain this scripture from the ${scriptureCategory} category: ${scriptureReference};
+      // Construct message (CORRECTED TEMPLATE LITERAL)
+      const message = `Please explain this scripture from the ${scriptureCategory} category: ${scriptureReference}`;
       
       // Connect to WebSocket and send request
       connectWebSocket(message);
