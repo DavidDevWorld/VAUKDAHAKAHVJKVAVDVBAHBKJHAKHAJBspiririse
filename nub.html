@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App with Timer, Pin, and Progress Tracking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0b0c10;
+            color: #ffffff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        #quiz-container {
+            margin-top: 50px;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        #level {
+            font-size: 2em;
+            color: yellow;
+        }
+
+        #question-box {
+            background-color: #ffffff;
+            color: black;
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 1.5em;
+        }
+
+        .answer-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        .answer-box {
+            background-color: #ffffff;
+            color: black;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            cursor: pointer;
+        }
+
+        .answer-box:hover {
+            background-color: #cfd8dc;
+        }
+
+        #timer {
+            font-size: 1.5em;
+            color: #FF5733;
+            margin: 20px;
+        }
+
+        #progress {
+            font-size: 1.5em;
+            color: #00FF00;
+            margin-top: 10px;
+        }
+
+        #progress-bar {
+            width: 80%;
+            height: 20px;
+            background-color: #333;
+            margin: 10px auto;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        #progress-bar-fill {
+            width: 0%;
+            height: 100%;
+            background-color: #00FF00;
+            transition: width 0.3s ease;
+        }
+
+        #congratulations {
+            font-size: 2em;
+            margin-top: 20px;
+            color: #00FF00;
+        }
+
+        #next-page-btn {
+            background-color: #00FF00;
+            color: #000;
+            font-size: 1.2em;
+            padding: 10px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 50px;
+        }
+
+        #next-page-btn:hover {
+            background-color: #008000;
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz-container">
+        <div id="level">AI BIBLE QUIZ</div>
+        <h>QUIZ FROM THE BOOK OF Numbers</h2>
+      
+        <div id="question-box">QUESTION</div>
+        <div id="timer">Time left: <span id="time-left">30</span> seconds</div>
+        <div id="progress">Question <span id="current-question">1</span> of <span id="total-questions">5</span></div>
+        <div id="progress-bar">
+            <div id="progress-bar-fill"></div>
+        </div>
+        <div class="answer-container">
+            <div class="answer-box" onclick="checkAnswer(this)">Answer 1</div>
+            <div class="answer-box" onclick="checkAnswer(this)">Answer 2</div>
+            <div class="answer-box" onclick="checkAnswer(this)">Answer 3</div>
+            <div class="answer-box" onclick="checkAnswer(this)">Answer 4</div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestion = 0;
+        let score = 0;
+        let timeLeft = 30; 
+        let timer;
+
+         const questions = [
+    {
+        question: "How many Israelites were counted in the first census?",
+        options: ["500,000", "600,000", "700,000", "800,000"],
+        answer: "600,000"
+    },
+    {
+        question: "Who were the only two men from the first generation allowed to enter the Promised Land?",
+        options: ["Moses and Aaron", "Joshua and Caleb", "Nadab and Abihu", "Eleazar and Ithamar"],
+        answer: "Joshua and Caleb"
+    },
+    {
+        question: "What guided the Israelites by day and night in the wilderness?",
+        options: ["A golden calf", "A cloud by day and fire by night", "The Ark of the Covenant", "Moses' staff"],
+        answer: "A cloud by day and fire by night"
+    },
+    {
+        question: "What was Miriam punished with for speaking against Moses?",
+        options: ["Blindness", "Leprosy", "A plague", "Exile"],
+        answer: "Leprosy"
+    },
+    {
+        question: "How many spies were sent to explore the land of Canaan?",
+        options: ["8", "10", "12", "15"],
+        answer: "12"
+    },
+    {
+        question: "What happened to Korah and his followers when they rebelled against Moses?",
+        options: ["They were struck by lightning", "They were swallowed by the earth", "They were banished", "They were forgiven"],
+        answer: "They were swallowed by the earth"
+    },
+    {
+        question: "What did Moses do to bring water from the rock at Meribah?",
+        options: ["He struck the rock", "He spoke to the rock", "He prayed over the rock", "He built an altar"],
+        answer: "He struck the rock"
+    },
+    {
+        question: "Why was Moses not allowed to enter the Promised Land?",
+        options: ["He killed an Egyptian", "He struck the rock instead of speaking to it", "He doubted God", "He worshiped a false god"],
+        answer: "He struck the rock instead of speaking to it"
+    },
+    {
+        question: "What animal did God send to punish the Israelites for complaining?",
+        options: ["Lions", "Snakes", "Locusts", "Scorpions"],
+        answer: "Snakes"
+    },
+    {
+        question: "What did God tell Moses to make to heal the Israelites from snake bites?",
+        options: ["A golden calf", "A bronze serpent", "A silver staff", "A burning bush"],
+        answer: "A bronze serpent"
+    },
+    {
+        question: "What food did God provide for the Israelites in the wilderness?",
+        options: ["Fish and bread", "Manna and quail", "Milk and honey", "Fruits and nuts"],
+        answer: "Manna and quail"
+    },
+    {
+        question: "What was Balaam’s donkey able to do?",
+        options: ["Run faster than a horse", "Talk", "Fly", "Disappear"],
+        answer: "Talk"
+    },
+    {
+        question: "Who was chosen as the new leader of Israel after Moses?",
+        options: ["Aaron", "Caleb", "Joshua", "Eleazar"],
+        answer: "Joshua"
+    },
+    {
+        question: "What did the twelve spies bring back from Canaan?",
+        options: ["Gold and silver", "A cluster of grapes", "Stone tablets", "A map"],
+        answer: "A cluster of grapes"
+    },
+    {
+        question: "Who was Balaam hired to curse?",
+        options: ["The Moabites", "The Amalekites", "The Israelites", "The Midianites"],
+        answer: "The Israelites"
+    },
+    {
+        question: "What was the name of Moses' sister?",
+        options: ["Sarah", "Miriam", "Rachel", "Deborah"],
+        answer: "Miriam"
+    },
+    {
+        question: "What did the Israelites do when they heard the bad report from the spies?",
+        options: ["Trusted in God", "Tried to return to Egypt", "Built an altar", "Fought against Canaanites"],
+        answer: "Tried to return to Egypt"
+    },
+    {
+        question: "What were the Israelites commanded to do with their enemies in Canaan?",
+        options: ["Make peace with them", "Drive them out", "Enslave them", "Marry them"],
+        answer: "Drive them out"
+    },
+    {
+        question: "What was the significance of the silver trumpets in Numbers?",
+        options: ["To signal the presence of God", "To call assemblies and direct movement", "To ward off enemies", "To celebrate festivals"],
+        answer: "To call assemblies and direct movement"
+    }
+];
+
+
+        const totalQuestions = questions.length;
+
+        function shuffleQuestions(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        shuffleQuestions(questions);
+
+        function loadQuestion() {
+            if (currentQuestion < totalQuestions) {
+                document.getElementById('question-box').innerText = questions[currentQuestion].question;
+
+                let answerBoxes = document.getElementsByClassName('answer-box');
+                for (let i = 0; i < answerBoxes.length; i++) {
+                    answerBoxes[i].innerText = questions[currentQuestion].options[i];
+                }
+
+                document.getElementById('current-question').innerText = currentQuestion + 1;
+                document.getElementById('total-questions').innerText = totalQuestions;
+
+                let progressPercentage = ((currentQuestion + 1) / totalQuestions) * 100;
+                document.getElementById('progress-bar-fill').style.width = progressPercentage + '%';
+
+                timeLeft = 30;
+                document.getElementById('time-left').innerText = timeLeft;
+                clearInterval(timer);
+                timer = setInterval(updateTimer, 1000);
+            } else {
+                displayResult();
+            }
+        }
+
+        function updateTimer() {
+            timeLeft--;
+            document.getElementById('time-left').innerText = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                currentQuestion++;
+                loadQuestion();
+            }
+        }
+
+        function checkAnswer(selectedAnswer) {
+            clearInterval(timer);
+            let selectedText = selectedAnswer.innerText;
+            
+            if (selectedText === questions[currentQuestion].answer) {
+                score++;
+            }
+
+            currentQuestion++;
+            loadQuestion();
+        }
+
+        function displayResult() {
+            let quizContainer = document.getElementById('quiz-container');
+            quizContainer.innerHTML = `<h2 id="congratulations">Congratulations!</h2>
+                                       <h2>You scored ${score} out of ${totalQuestions}</h2>
+                                       <p>Well done! You've completed the quiz.</p>`;
+
+            if (score >= 2) {
+                quizContainer.innerHTML += `<button id="next-page-btn" onclick="goToNextPage()">Go to Next Page</button>`;
+            }
+        }
+
+        function goToNextPage() {
+            window.location.href = "nextpage.html";
+        }
+
+        window.onload = loadQuestion;
+    </script>
+</body>
+</html>
