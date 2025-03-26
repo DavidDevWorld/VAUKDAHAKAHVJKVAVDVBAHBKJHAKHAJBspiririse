@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App with Timer, Pin, and Progress Tracking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0b0c10;
+            color: #ffffff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        #quiz-container {
+            margin-top: 50px;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        #level {
+            font-size: 2em;
+            color: yellow;
+        }
+
+        #question-box {
+            background-color: #ffffff;
+            color: black;
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 1.5em;
+        }
+
+        .answer-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        .answer-box {
+            background-color: #ffffff;
+            color: black;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            cursor: pointer;
+        }
+
+        .answer-box:hover {
+            background-color: #cfd8dc;
+        }
+
+        #timer {
+            font-size: 1.5em;
+            color: #FF5733;
+            margin: 20px;
+        }
+
+        #progress {
+            font-size: 1.5em;
+            color: #00FF00;
+            margin-top: 10px;
+        }
+
+        #progress-bar {
+            width: 80%;
+            height: 20px;
+            background-color: #333;
+            margin: 10px auto;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        #progress-bar-fill {
+            width: 0%;
+            height: 100%;
+            background-color: #00FF00;
+            transition: width 0.3s ease;
+        }
+
+        #congratulations {
+            font-size: 2em;
+            margin-top: 20px;
+            color: #00FF00;
+        }
+
+        #next-page-btn {
+            background-color: #00FF00;
+            color: #000;
+            font-size: 1.2em;
+            padding: 10px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 50px;
+        }
+
+        #next-page-btn:hover {
+            background-color: #008000;
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz-container">
+        <div id="level">AI BIBLE QUIZ</div>
+        <h>QUIZ FROM THE BOOK OF Leviticus</h2>
+      
+        <div id="question-box">QUESTION</div>
+        <div id="timer">Time left: <span id="time-left">30</span> seconds</div>
+        <div id="progress">Question <span id="current-question">1</span> of <span id="total-questions">5</span></div>
+        <div id="progress-bar">
+            <div id="progress-bar-fill"></div>
+        </div>
+        <div class="answer-container">
+            <div class="answer-box" onclick="checkAnswer(this)">Answer 1</div>
+            <div class="answer-box" onclick="checkAnswer(this)">Answer 2</div>
+            <div class="answer-box" onclick="checkAnswer(this)">Answer 3</div>
+            <div class="answer-box" onclick="checkAnswer(this)">Answer 4</div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestion = 0;
+        let score = 0;
+        let timeLeft = 30; 
+        let timer;
+
+         const questions = [
+    {
+        question: "What type of offerings are described in Leviticus?",
+        options: ["Burnt, grain, peace, sin, and guilt offerings", "Gold and silver offerings", "Animal offerings only", "Food and drink offerings"],
+        answer: "Burnt, grain, peace, sin, and guilt offerings"
+    },
+    {
+        question: "Who were the priests in Leviticus?",
+        options: ["The sons of Aaron", "The sons of Moses", "The Levites", "The tribe of Judah"],
+        answer: "The sons of Aaron"
+    },
+    {
+        question: "What was the punishment for offering strange fire before the Lord?",
+        options: ["Banishment", "Instant death", "Fasting for seven days", "A burnt offering"],
+        answer: "Instant death"
+    },
+    {
+        question: "What day was the most sacred day of atonement in Israel?",
+        options: ["Passover", "Day of Atonement (Yom Kippur)", "Feast of Tabernacles", "Sabbath"],
+        answer: "Day of Atonement (Yom Kippur)"
+    },
+    {
+        question: "What was sprinkled on the altar for atonement?",
+        options: ["Oil", "Water", "Blood", "Wine"],
+        answer: "Blood"
+    },
+    {
+        question: "What animals were considered clean and could be eaten?",
+        options: ["Only land animals", "Only fish", "Animals that chew the cud and have divided hooves", "All animals"],
+        answer: "Animals that chew the cud and have divided hooves"
+    },
+    {
+        question: "What happened to a person who touched a dead body?",
+        options: ["They became unclean", "They had to sacrifice a bull", "They were expelled from the camp", "They had to fast for seven days"],
+        answer: "They became unclean"
+    },
+    {
+        question: "What was the punishment for blasphemy in Leviticus?",
+        options: ["Imprisonment", "A sin offering", "Death by stoning", "Banishment"],
+        answer: "Death by stoning"
+    },
+    {
+        question: "What were Israelites forbidden from consuming?",
+        options: ["Milk", "Blood", "Honey", "Grain"],
+        answer: "Blood"
+    },
+    {
+        question: "How often was the land to rest according to Leviticus?",
+        options: ["Every 3 years", "Every 5 years", "Every 7 years", "Every 10 years"],
+        answer: "Every 7 years"
+    },
+    {
+        question: "What was the role of the scapegoat on the Day of Atonement?",
+        options: ["It was sacrificed on the altar", "It was released into the wilderness", "It was kept as a holy animal", "It was given to the priests"],
+        answer: "It was released into the wilderness"
+    },
+    {
+        question: "Who was allowed to enter the Most Holy Place in the Tabernacle?",
+        options: ["Any Israelite", "Only Aaron", "Only the High Priest", "All Levites"],
+        answer: "Only the High Priest"
+    },
+    {
+        question: "What festival marked the beginning of the agricultural year?",
+        options: ["Passover", "Firstfruits", "Feast of Tabernacles", "Sabbath"],
+        answer: "Firstfruits"
+    },
+    {
+        question: "What was the consequence of not following God's laws in Leviticus?",
+        options: ["Blessings", "Curses and exile", "Sacrificial atonement", "Immediate death"],
+        answer: "Curses and exile"
+    },
+    {
+        question: "What was the penalty for working on the Sabbath?",
+        options: ["A burnt offering", "Imprisonment", "Death", "A fine"],
+        answer: "Death"
+    },
+    {
+        question: "What was the Jubilee year?",
+        options: ["Every 25 years", "Every 50 years", "Every 70 years", "Every 100 years"],
+        answer: "Every 50 years"
+    },
+    {
+        question: "What were Israelites commanded to love as themselves?",
+        options: ["Their neighbors", "Their livestock", "Their families", "Their king"],
+        answer: "Their neighbors"
+    },
+    {
+        question: "What was the purpose of the grain offering?",
+        options: ["To atone for sins", "To give thanks to God", "To purify the people", "To pay the priests"],
+        answer: "To give thanks to God"
+    },
+    {
+        question: "Who were allowed to eat the most holy offerings?",
+        options: ["All Israelites", "Only men", "Only the priests", "Only the poor"],
+        answer: "Only the priests"
+    },
+    {
+        question: "What type of clothing were priests commanded to wear?",
+        options: ["Linen garments", "Silk robes", "Leather tunics", "Wool cloaks"],
+        answer: "Linen garments"
+    }
+];
+
+        const totalQuestions = questions.length;
+
+        function shuffleQuestions(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        shuffleQuestions(questions);
+
+        function loadQuestion() {
+            if (currentQuestion < totalQuestions) {
+                document.getElementById('question-box').innerText = questions[currentQuestion].question;
+
+                let answerBoxes = document.getElementsByClassName('answer-box');
+                for (let i = 0; i < answerBoxes.length; i++) {
+                    answerBoxes[i].innerText = questions[currentQuestion].options[i];
+                }
+
+                document.getElementById('current-question').innerText = currentQuestion + 1;
+                document.getElementById('total-questions').innerText = totalQuestions;
+
+                let progressPercentage = ((currentQuestion + 1) / totalQuestions) * 100;
+                document.getElementById('progress-bar-fill').style.width = progressPercentage + '%';
+
+                timeLeft = 30;
+                document.getElementById('time-left').innerText = timeLeft;
+                clearInterval(timer);
+                timer = setInterval(updateTimer, 1000);
+            } else {
+                displayResult();
+            }
+        }
+
+        function updateTimer() {
+            timeLeft--;
+            document.getElementById('time-left').innerText = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                currentQuestion++;
+                loadQuestion();
+            }
+        }
+
+        function checkAnswer(selectedAnswer) {
+            clearInterval(timer);
+            let selectedText = selectedAnswer.innerText;
+            
+            if (selectedText === questions[currentQuestion].answer) {
+                score++;
+            }
+
+            currentQuestion++;
+            loadQuestion();
+        }
+
+        function displayResult() {
+            let quizContainer = document.getElementById('quiz-container');
+            quizContainer.innerHTML = `<h2 id="congratulations">Congratulations!</h2>
+                                       <h2>You scored ${score} out of ${totalQuestions}</h2>
+                                       <p>Well done! You've completed the quiz.</p>`;
+
+            if (score >= 2) {
+                quizContainer.innerHTML += `<button id="next-page-btn" onclick="goToNextPage()">Go to Next Page</button>`;
+            }
+        }
+
+        function goToNextPage() {
+            window.location.href = "nextpage.html";
+        }
+
+        window.onload = loadQuestion;
+    </script>
+</body>
+</html>
